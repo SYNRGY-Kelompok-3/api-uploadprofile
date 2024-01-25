@@ -5,7 +5,7 @@
 `[ENDPOINT] /api/profil/upload`
 
 ```url
-[POST] http://localhost:3000/api/profil/upload
+[POST] https://api-image.fly.dev/api/profil/upload
 ```
 
 ##### Response
