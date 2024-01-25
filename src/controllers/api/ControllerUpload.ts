@@ -6,37 +6,36 @@ class ControllerUpload {
   upload() {
     return async (req: Request, res: Response, _: NextFunction) => {
       try {
+        let resultUpload;
+
         if (req.file) {
           const fileBase64 = req.file.buffer.toString('base64');
           const file = `data:${req.file.mimetype};base64,${fileBase64}`;
-          const resultUpload = await media.storage.uploader.upload(
-            file,
-            (err: any, result: any) => {
+          
+          resultUpload = await new Promise((resolve, reject) => {
+            media.storage.uploader.upload(file, (err: any, result: any) => {
               if (err) {
-                return ResponseBuilder.response({
-                  code: 403,
-                  res,
-                  data: 'failed upload to storage',
-                });
+                reject(err);
+              } else {
+                resolve(result);
               }
-              return result;
-            }
-          );
+            });
+          });
 
           return ResponseBuilder.response({
             code: 200,
             res,
             data: resultUpload,
           });
+        } else {
+          return ResponseBuilder.response({
+            code: 404,
+            res,
+            data: 'file not found',
+          });
         }
-
-        ResponseBuilder.response({
-          code: 404,
-          res,
-          data: 'file not found',
-        });
       } catch (error) {
-        ResponseBuilder.response({
+        return ResponseBuilder.response({
           code: 500,
           data: 'upload failed',
           res,
